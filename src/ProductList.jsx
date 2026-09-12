@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css';
 import CartItem from './CartItem';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from './CartSlice';
 
 function ProductList({ onHomeClick }) {
@@ -11,8 +11,18 @@ function ProductList({ onHomeClick }) {
     // Redux dispatch
     const dispatch = useDispatch();
 
+    // Get cart items from Redux store
+    const CartItems = useSelector(state => state.cart.items);
+
     // State to track which products have been added to cart
     const [addedToCart, setAddedToCart] = useState({});
+
+    // Calculate total quantity of items in cart
+    const calculateTotalQuantity = () => {
+        return CartItems
+            ? CartItems.reduce((total, item) => total + item.quantity, 0)
+            : 0;
+    };
 
     const plantsArray = [
         {
@@ -61,13 +71,13 @@ function ProductList({ onHomeClick }) {
             plants: [
                 {
                     name: "Lavender",
-                    image: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wdC1hcm9tYXRpYy1wbGFudHwyMDI0",
+                    image: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wbC1hcm9tYXRpYy1wbGFudHwyMDI0",
                     description: "Calming scent, used in aromatherapy.",
                     cost: "$20"
                 },
                 {
                     name: "Jasmine",
-                    image: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wdC1hcm9tYXRpYy1wbGFudHwyMDI0",
+                    image: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wbGFudHwyMDI0",
                     description: "Sweet fragrance, promotes relaxation.",
                     cost: "$18"
                 },
@@ -369,6 +379,8 @@ function ProductList({ onHomeClick }) {
 
                                 </svg>
 
+                                <span>{calculateTotalQuantity()}</span>
+
                             </h1>
 
                         </a>
@@ -423,8 +435,11 @@ function ProductList({ onHomeClick }) {
                                             onClick={() =>
                                                 handleAddToCart(plant)
                                             }
+                                            disabled={addedToCart[plant.name]}
                                         >
-                                            Add to Cart
+                                            {addedToCart[plant.name]
+                                                ? 'Added to Cart'
+                                                : 'Add to Cart'}
                                         </button>
 
                                     </div>
